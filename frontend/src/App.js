@@ -16,8 +16,12 @@ TODO
 Setup for login and registration with Auth0 x
 Configure site authorization x
 Setup backend and mongoDB x
-Allow users to add their plants and then view the plants + additional info
-Additional info being how often to water and when to next water
+
+Improve form for searching plants by using plant API and drop down menu
+Also location drop down for form
+Automatically add image url to database
+Load the user's plants
+
 */
 
 function App() {

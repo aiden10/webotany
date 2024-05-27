@@ -2,7 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 
-function AddPlant(name, owner){
+function AddPlant(name, owner, location){
     
     axios.post('http://localhost:4000/api/addPlant', {
         plantName: name,
@@ -19,13 +19,15 @@ function AddPlant(name, owner){
 function AddPlantButton(){
     const { user } = useAuth0();
     const [plantName, setPlantName] = useState('');
+    const [location, setLocation] = useState('');
 
     const handleSubmit = (e)=> {
         e.preventDefault();
         if (user){
-            AddPlant(plantName, user.email);
+            AddPlant(plantName, user.email, location);
             alert('Plant added');
             setPlantName('');
+            setLocation('');
         }
         else{
             alert('Must be logged in');
@@ -43,6 +45,17 @@ function AddPlantButton(){
                         id="plantName" 
                         value={plantName} 
                         onChange={(e) => setPlantName(e.target.value)} 
+                        required 
+                    />
+                </div>
+                <div className="mb-3">
+                    <label htmlFor="location" className="form-label">Location</label>
+                    <input 
+                        type="text" 
+                        className="form-control" 
+                        id="location" 
+                        value={location} 
+                        onChange={(e) => setLocation(e.target.value)} 
                         required 
                     />
                 </div>
