@@ -14,8 +14,8 @@ const clientID = process.env.REACT_APP_AUTH0_CLIENT_ID;
 Will probably just use templates for most pages
 TODO 
 Setup for login and registration with Auth0 x
-Configure site authorization
-Setup backend and mongoDB
+Configure site authorization x
+Setup backend and mongoDB x
 Allow users to add their plants and then view the plants + additional info
 Additional info being how often to water and when to next water
 */

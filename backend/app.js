@@ -3,6 +3,7 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const routes = require('./routes/routes');
 const app = express();
+const cors = require('cors');
 const mongoURI = process.env.ATLAS_URI;
 
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -16,6 +17,7 @@ database.once('connected', () => {
   console.log('Database Connected');
 });
 
+app.use(cors());
 app.use(express.json());
 
 app.listen(4000, () => {
