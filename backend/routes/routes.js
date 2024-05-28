@@ -1,7 +1,29 @@
 const express = require('express');
 const Plant = require('../models/plant'); // this seems to work the same as a db object  
+const axios = require('axios');
+require('dotenv').config();
 
 const router = express.Router()
+const TOKEN = process.env.TREFLE_TOKEN;
+
+const getCertificate = async() =>{
+    try {
+        const response = await axios({
+            method: 'post',
+            url: 'https://trefle.io/api/auth/claim',
+            headers: {'Content-Type': 'application/json'},
+            params: {
+                origin: 'http://localhost:3000',
+                token: TOKEN
+            }
+        });
+        return response.data.token;
+    } 
+    catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
 
 router.get('/', (req, res) => {
     res.send("hello")
@@ -31,6 +53,16 @@ router.post('/addPlant', async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Something went wrong' });
+    }
+});
+
+router.get('/getCertificate', async (req, res) => {
+    try {
+        const certificate = await getCertificate();
+        return res.json({token: certificate});
+    }
+    catch (error){
+        res.status(500).json({message: error.message})
     }
 });
 

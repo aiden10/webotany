@@ -20,7 +20,17 @@ Setup backend and mongoDB x
 Improve form for searching plants by using plant API and drop down menu
 Also location drop down for form
 Automatically add image url to database
-Load the user's plants
+Load the user's plants + image
+
+Incorporate weather stuff
+Days since rain in the plant schema
+Email notifications/reminders to water
+Improve UI
+
+If len(input) > 5:
+  results = fetch(plant_api)
+  if results:
+    render(results)
 
 */
 

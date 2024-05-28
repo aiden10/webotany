@@ -2,13 +2,13 @@ import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
 import { useEffect } from "react";
 import AddPlantButton from "../../components/AddPlantButton";
+import DropdownSearch from "../../components/DropdownSearch";
 
 function Plants(){
     const { user, isLoading } = useAuth0();
     
     useEffect( () => {
         if (!isLoading && user){
-            const today = new Date().toISOString();
             axios.get('http://localhost:4000/api/getUserPlants/' + user.email)
             .then(function (response){
                 console.log(response)
@@ -31,6 +31,7 @@ function Plants(){
         <div>
             <p>Plants</p>
             <AddPlantButton />
+            <DropdownSearch />
         </div>
     );
 }
