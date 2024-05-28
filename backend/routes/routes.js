@@ -6,7 +6,24 @@ require('dotenv').config();
 const router = express.Router()
 const TOKEN = process.env.TREFLE_TOKEN;
 
-const getCertificate = async() =>{
+const getPlantImage = async (plant) => {
+    try {
+        const response = await axios({
+            method: 'get',
+            url: `https://trefle.io/api/v1/plants/search?token=${TOKEN}&q=${plant}`,
+        });
+        if (response.data && response.data.data && response.data.data.length > 0) {
+            return response.data.data[0].image_url;
+        } else {
+            throw new Error('No plant found');
+        }
+    } catch (error) {
+        console.error('Error fetching plant image:', error);
+        throw error;
+    }
+}
+
+const getCertificate = async() => {
     try {
         const response = await axios({
             method: 'post',
@@ -24,14 +41,11 @@ const getCertificate = async() =>{
         throw error;
     }
 }
-
-router.get('/', (req, res) => {
-    res.send("hello")
-});
   
 router.get('/getUserPlants/:email', async (req, res) => {
     try {
         const plants = await Plant.find({owner: req.params.email}); // get plants with user's email 
+        res.setHeader('Content-Type', 'application/json');
         res.json(plants)
     }
     catch (error){
@@ -41,17 +55,17 @@ router.get('/getUserPlants/:email', async (req, res) => {
 
 router.post('/addPlant', async (req, res) => {
     try {
+        const plantImg = await getPlantImage(req.body.plantName);
         const newPlant = new Plant({
             plantName: req.body.plantName,
             owner: req.body.owner,
             location: req.body.location,
-            imgURL: req.body.imgURL,
-            date: req.body.datePlanted
+            imgURL: plantImg || 'https://hips.hearstapps.com/hmg-prod/images/sansevieria-royalty-free-image-1642793822.jpg?crop=1xw:0.99987xh;center,top&resize=980:*',
         });
         await newPlant.save();
         res.status(201).json({ message: 'Plant created successfully' });
     } catch (err) {
-        console.error(err);
+        console.error('Error adding plant:', err);
         res.status(500).json({ message: 'Something went wrong' });
     }
 });

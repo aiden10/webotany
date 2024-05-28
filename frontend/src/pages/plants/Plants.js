@@ -1,17 +1,20 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
-import { useEffect } from "react";
-import AddPlantButton from "../../components/AddPlantButton";
-import DropdownSearch from "../../components/DropdownSearch";
+import { useEffect, useState } from "react";
+import PlantForm from "../../components/PlantForm";
+import Plant from "../../components/Plant";
 
 function Plants(){
     const { user, isLoading } = useAuth0();
-    
+    const [plants, setPlants] = useState([]);
+    const [dataRetrieved, setDataRetrieved] = useState(false);
+
     useEffect( () => {
         if (!isLoading && user){
             axios.get('http://localhost:4000/api/getUserPlants/' + user.email)
             .then(function (response){
-                console.log(response)
+                setPlants(response);
+                setDataRetrieved(true);
             })
             .catch(function (error){
                 console.log(error)
@@ -30,8 +33,8 @@ function Plants(){
     return(
         <div>
             <p>Plants</p>
-            <AddPlantButton />
-            <DropdownSearch />
+            <PlantForm />
+            {dataRetrieved && <Plant plants={plants.data} />}
         </div>
     );
 }

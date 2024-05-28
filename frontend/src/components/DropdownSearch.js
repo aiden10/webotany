@@ -36,17 +36,22 @@ const filterPlants = async (inputValue) => {
 }
 
 const loadOptions = (inputValue, callback) => {
-    if (inputValue.length > 5){
+    if (inputValue.length > 4){
         filterPlants(inputValue).then((options) => {
             callback(options);
         });    
     }
 }
 
-function DropdownSearch(){
+function DropdownSearch({ onSelectPlant }){
+    const handleChange = (selectedOption) => {
+        onSelectPlant(selectedOption);
+    }
+
     return(
         <div>
-            <AsyncSelect cacheOptions loadOptions={loadOptions} defaultOptions />
+            <AsyncSelect cacheOptions loadOptions={loadOptions} defaultOptions onChange={handleChange}/>
+
         </div>
     );
 }
