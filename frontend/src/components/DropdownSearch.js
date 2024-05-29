@@ -50,7 +50,11 @@ function DropdownSearch({ onSelectPlant }){
 
     return(
         <div>
-            <AsyncSelect cacheOptions loadOptions={loadOptions} defaultOptions onChange={handleChange}/>
+            <AsyncSelect cacheOptions
+             loadOptions={loadOptions}
+             defaultOptions 
+             onChange={handleChange}
+             placeholder="Search here..."/>
 
         </div>
     );

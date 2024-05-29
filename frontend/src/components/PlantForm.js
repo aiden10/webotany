@@ -5,30 +5,30 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 function PlantForm() {
     const [selectedPlant, setSelectedPlant] = useState(null);
-    const [textField, setTextField] = useState('');
+    const [locationField, setlocationField] = useState('');
     const [error, setError] = useState('');
     const { user } = useAuth0();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        if (!selectedPlant || !textField) {
-            setError('All fields are required.');
+        if (!selectedPlant || !locationField) {
+            setError('A plant is required.');
             return;
         }
 
         setError('');
-        setTextField('');
+        setlocationField('');
         
         try {
             const response = await axios.post('http://localhost:4000/api/addPlant', {
                 plantName: selectedPlant.label,
                 owner: user.email, 
-                location: textField,
+                location: locationField,
             });
-            console.log('Plant added successfully:', response.data);
+            alert(response.data.message);
         } catch (error) {
-            console.error('Error adding plant:', error);
+            alert(error.data.message);
         }
     };
 
@@ -42,17 +42,16 @@ function PlantForm() {
             </div>
             <div>
                 <label>
-                    Location:
+                    Location (Optional):
                     <input
                         type="text"
-                        value={textField}
-                        onChange={(e) => setTextField(e.target.value)}
-                        required
+                        value={locationField}
+                        onChange={(e) => setlocationField(e.target.value)}
                     />
                 </label>
             </div>
             {error && <p style={{ color: 'red' }}>{error}</p>}
-            <button type="submit">Submit</button>
+            <button type="submit" className='btn'>Submit</button>
         </form>
     );
 }

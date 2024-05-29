@@ -11,26 +11,14 @@ const domain = process.env.REACT_APP_AUTH0_DOMAIN;
 const clientID = process.env.REACT_APP_AUTH0_CLIENT_ID;
 
 /*
-Will probably just use templates for most pages
 TODO 
-Setup for login and registration with Auth0 x
-Configure site authorization x
-Setup backend and mongoDB x
+Delete plant button
+  - new endpoint
+  - delete button component (pop up window for confirmation?)
 
-Improve form for searching plants by using plant API and drop down menu
-Also location drop down for form
-Automatically add image url to database
-Load the user's plants + image
-
-Incorporate weather stuff
-Days since rain in the plant schema
-Email notifications/reminders to water
-Improve UI
-
-If len(input) > 5:
-  results = fetch(plant_api)
-  if results:
-    render(results)
+Weather API gets called every 24 hours
+Gets called for each plant in database with its location as the query
+If it is raining or is expected to rain that day (chance > 50%): daysSinceRain = 0 ? daysSinceRain++; 
 
 */
 

@@ -2,7 +2,7 @@ const express = require('express');
 const Plant = require('../models/plant'); // this seems to work the same as a db object  
 const axios = require('axios');
 require('dotenv').config();
-
+const { ObjectId } = require('mongodb');
 const router = express.Router()
 const TOKEN = process.env.TREFLE_TOKEN;
 
@@ -53,14 +53,34 @@ router.get('/getUserPlants/:email', async (req, res) => {
     }
 });
 
+router.get('/deletePlant/:id', async (req, res) => {
+    const plantID = req.params.id;
+    const objectId = new ObjectId(plantID); // Convert the string to ObjectId
+    try {
+        const result = await Plant.deleteOne({_id: objectId});
+
+        if (result.deletedCount === 0){
+            return res.status(404).json({ message: 'Plant not found or already deleted' });
+        }
+
+        res.status(200).json({message: 'Plant successfully deleted'});
+    }
+    catch (error){
+        console.error(error);
+        res.status(500).json({message: error.message});
+        throw error;
+    }
+});
+
 router.post('/addPlant', async (req, res) => {
     try {
         const plantImg = await getPlantImage(req.body.plantName);
         const newPlant = new Plant({
             plantName: req.body.plantName,
             owner: req.body.owner,
-            location: req.body.location,
+            location: req.body.location || '',
             imgURL: plantImg || 'https://hips.hearstapps.com/hmg-prod/images/sansevieria-royalty-free-image-1642793822.jpg?crop=1xw:0.99987xh;center,top&resize=980:*',
+            daysSinceRain: 0
         });
         await newPlant.save();
         res.status(201).json({ message: 'Plant created successfully' });

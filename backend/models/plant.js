@@ -20,6 +20,11 @@ const plantSchema = new mongoose.Schema({
     datePlanted: {
         type: Date,
         default: Date.now
+    },
+    daysSinceRain: {
+        required: true,
+        type: Number,
+        default: 0
     }
 }, {collection: 'Plants'});
 

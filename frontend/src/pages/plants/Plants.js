@@ -11,7 +11,7 @@ function Plants(){
 
     useEffect( () => {
         if (!isLoading && user){
-            axios.get('http://localhost:4000/api/getUserPlants/' + user.email)
+            axios.get(`http://localhost:4000/api/getUserPlants/${user.email}`)
             .then(function (response){
                 setPlants(response);
                 setDataRetrieved(true);
