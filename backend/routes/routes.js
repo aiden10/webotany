@@ -5,6 +5,7 @@ require('dotenv').config();
 const { ObjectId } = require('mongodb');
 const router = express.Router()
 const TOKEN = process.env.TREFLE_TOKEN;
+const WEATHER_API_KEY = process.env.WEATHER_KEY;
 
 const getPlantImage = async (plant) => {
     try {
@@ -23,7 +24,7 @@ const getPlantImage = async (plant) => {
     }
 }
 
-const getCertificate = async() => {
+const getCertificate = async () => {
     try {
         const response = await axios({
             method: 'post',
@@ -42,6 +43,21 @@ const getCertificate = async() => {
     }
 }
   
+const fetchWeather = async (location) => {
+    try {
+        const response = await axios({
+            method: 'get',
+            url: `http://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${location}`,
+        });
+        console.log(response.data)
+        return response.data;
+    } 
+    catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
 router.get('/getUserPlants/:email', async (req, res) => {
     try {
         const plants = await Plant.find({owner: req.params.email}); // get plants with user's email 
@@ -83,7 +99,7 @@ router.post('/addPlant', async (req, res) => {
             daysSinceRain: 0
         });
         await newPlant.save();
-        res.status(201).json({ message: 'Plant created successfully' });
+        res.status(201).json({ message: 'Plant created successfully', newPlant });
     } catch (err) {
         console.error('Error adding plant:', err);
         res.status(500).json({ message: 'Something went wrong' });
@@ -100,4 +116,33 @@ router.get('/getCertificate', async (req, res) => {
     }
 });
 
-module.exports = router;
+
+module.exports = {
+    router: router,
+    rainCheck: async function(){
+        try {
+            const allPlants = await Plant.find();
+
+            for (const plant of allPlants){
+                const weatherResponse = await fetchWeather(plant.location);
+                if (weatherResponse && weatherResponse.forecast){
+                    const precipitation = weatherResponse.forecast.forecastday[0].day.totalprecip_mm;
+                    if (precipitation > 5){ // rained, amount could be user set
+                        plant.daysSinceRain = 0;
+                    } 
+                    else{
+                        plant.daysSinceRain++;
+                    }
+                    if (plant.daysSinceRain > 2){
+                        console.log('Sending email to ' + plant.owner);
+                        // implement actual email sending
+                    }
+                    await plant.save();
+                }
+            }
+        }
+        catch (error){
+            console.error(error);
+        }
+    }
+};

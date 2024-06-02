@@ -1,22 +1,6 @@
 import React from 'react';
-import axios from 'axios';
 
-const deletePlant = async (id) => {
-    console.log(id);
-    axios.get(`http://localhost:4000/api/deletePlant/${id}`)
-    .then(
-        function (response){
-            alert(response.data.message);
-        }
-    )
-    .catch(
-        function (error){
-            alert(error.message);
-        }
-    );
-}
-
-function Plant({ plants }) {
+function Plant({ plants, deletePlant }) {
     return (
         <div>
             {plants.map((plant) => (
@@ -24,7 +8,7 @@ function Plant({ plants }) {
                     <img src={plant.imgURL} alt={plant.plantName} width="200" height="200"/>
                     <h2>{plant.plantName}</h2>
                     <p>Location: {plant.location}</p>
-                    <p>Date Planted: {plant.datePlanted}</p>
+                    <p>Date Planted: {plant.datePlanted.split("T")[0]}</p>
                     <button onClick={() => deletePlant(plant._id)} className='btn'>Delete Plant</button>
                 </div>
             ))}
@@ -33,3 +17,4 @@ function Plant({ plants }) {
 }
 
 export default Plant;
+

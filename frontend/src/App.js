@@ -12,14 +12,20 @@ const clientID = process.env.REACT_APP_AUTH0_CLIENT_ID;
 
 /*
 TODO 
-Delete plant button
+Delete plant button x
   - new endpoint
   - delete button component (pop up window for confirmation?)
+
+Format displayed dates x
+Re-render Plants when a plant is added or deleted
+Display days since rain
+Endpoint and button to edit a plant's daysSinceRain (maybe)
 
 Weather API gets called every 24 hours
 Gets called for each plant in database with its location as the query
 If it is raining or is expected to rain that day (chance > 50%): daysSinceRain = 0 ? daysSinceRain++; 
-
+Email notifications
+UI 
 */
 
 function App() {
