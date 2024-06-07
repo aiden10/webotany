@@ -1,11 +1,22 @@
 const express = require('express');
 const Plant = require('../models/plant'); // this seems to work the same as a db object  
 const axios = require('axios');
+const nodemailer = require('nodemailer');
 require('dotenv').config();
 const { ObjectId } = require('mongodb');
 const router = express.Router()
 const TOKEN = process.env.TREFLE_TOKEN;
 const WEATHER_API_KEY = process.env.WEATHER_KEY;
+const SENDER_EMAIL = process.env.SENDER_EMAIL;
+const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
+
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: SENDER_EMAIL,
+      pass: EMAIL_PASSWORD
+    }
+  });
 
 const getPlantImage = async (plant) => {
     try {
@@ -56,6 +67,30 @@ const fetchWeather = async (location) => {
         console.error(error);
         throw error;
     }
+}
+
+const sendEmail = async (owner, location, daysSinceRain, plantName) => {
+    var mailOptions = {
+        from: SENDER_EMAIL,
+        to: owner,
+        subject: 'Webotany: Your plant may need watering!',
+        text: `Dear ${owner}, 
+        It's been an estimated ${daysSinceRain} days since your ${plantName} located in ${location} has recieved water!
+        This was determined by monitoring the weather in the region where it's located. 
+        If you have watered your plant already, please disregard this message.
+        If you wish to not recieve these messages leave the location field blank when adding a plant.
+
+        Note: This is an automated message, please do not reply.`
+    };
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.error(error);
+            throw error;
+        } 
+        else {
+            console.log('Email sent: ' + info.response);
+        }
+    }); 
 }
 
 router.get('/getUserPlants/:email', async (req, res) => {
@@ -116,7 +151,6 @@ router.get('/getCertificate', async (req, res) => {
     }
 });
 
-
 module.exports = {
     router: router,
     rainCheck: async function(){
@@ -129,13 +163,13 @@ module.exports = {
                     const precipitation = weatherResponse.forecast.forecastday[0].day.totalprecip_mm;
                     if (precipitation > 5){ // rained, amount could be user set
                         plant.daysSinceRain = 0;
-                    } 
+                    }
                     else{
                         plant.daysSinceRain++;
                     }
                     if (plant.daysSinceRain > 2){
                         console.log('Sending email to ' + plant.owner);
-                        // implement actual email sending
+                        sendEmail(plant.owner, plant.location, plant.daysSinceRain, plant.plantName)
                     }
                     await plant.save();
                 }
